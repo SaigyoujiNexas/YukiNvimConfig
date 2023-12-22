@@ -12,10 +12,13 @@ opt.expandtab = true
 opt.autoindent = true
 opt.wrap = true
 opt.cursorline = true
--- opt.cursorlineopt = true
 opt.mouse:append("a")
 opt.ignorecase = true
 opt.termguicolors = true
+opt.signcolumn = "yes"
+opt.splitright = true
+opt.splitbelow = true
+
 
 -- lazy packet manager config start
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
@@ -32,7 +35,5 @@ end
 
 vim.opt.rtp:prepend(lazypath)
 -- lazy packet manager config end
-
-
 require("plugin")
 require("keymap")

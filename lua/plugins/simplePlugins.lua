@@ -13,4 +13,7 @@ return {
         "HiPHish/rainbow-delimiters.nvim",
         dependencies = { "nvim-treesitter/nvim-treesitter" }
     },
+    {
+        'akinsho/bufferline.nvim', version = "*", dependencies = 'nvim-tree/nvim-web-devicons'
+    }
 }
