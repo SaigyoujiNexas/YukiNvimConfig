@@ -8,7 +8,6 @@ return {
             require('Comment').setup()
         end
     },
-
     {
         "HiPHish/rainbow-delimiters.nvim",
         dependencies = { "nvim-treesitter/nvim-treesitter" }
@@ -16,8 +15,11 @@ return {
     {
         'akinsho/bufferline.nvim',
         version = "*",
-        dependencies = 'nvim-tree/nvim-web-devicons',
+        dependencies = { "nvim-tree/nvim-web-devicons",
+            "catppuccin/nvim" },
+        lazy = false,
         config = function()
+            local macchiato = require("catppuccin.palettes").get_palette "macchiato"
             require("bufferline").setup {
                 options = {
                     options = {
@@ -26,10 +28,13 @@ return {
                             filetype = "NvimTree",
                             text = "File Explorer",
                             highlight = "Directory",
-                            text_align = "left" } }, }
-                }
+                            text_align = "left" } }, },
+                },
+                highlights = require("catppuccin.groups.integrations.bufferline").get()
             }
-            vim.keymap.set("n", "<Tab>", ":bnext<CR>")
-        end
+        end,
+        keys = {
+            { "<Tab>", ":bnext<CR>" }
+        }
     }
 }

@@ -1,5 +1,7 @@
 return {
     "nvim-tree/nvim-tree.lua",
+    version = "*",
+    lazy = false,
     dependencies = { "nvim-tree/nvim-web-devicons" },
     config = function()
         -- disable netrw at the very start of your init.lua
@@ -21,6 +23,9 @@ return {
                 dotfiles = true,
             },
         })
-        vim.keymap.set("n", "<C-t>", ":NvimTreeToggle<CR>", { noremap = true })
-    end
+        -- vim.keymap.set("n", "<C-t>", ":NvimTreeToggle<CR>", { noremap = true })
+    end,
+    keys = {
+        {"<C-t>", ":NvimTreeToggle<CR>", mode="n", {noremap = true}}
+    }
 }

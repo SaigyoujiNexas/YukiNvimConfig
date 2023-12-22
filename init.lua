@@ -34,4 +34,3 @@ end
 vim.opt.rtp:prepend(lazypath)
 -- lazy packet manager config end
 require("plugin")
-require("keymap")

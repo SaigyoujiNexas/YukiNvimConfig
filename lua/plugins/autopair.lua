@@ -1,5 +1,9 @@
 return {
     "windwp/nvim-autopairs",
+    event = "InsertEnter",
+    dependencies = {
+        "hrsh7th/cmp-nvim-lsp",
+    },
     config = function()
         require("nvim-autopairs").setup()
         -- If you want insert `(` after select function or method item
