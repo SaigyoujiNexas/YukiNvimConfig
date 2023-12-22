@@ -18,8 +18,6 @@ opt.termguicolors = true
 opt.signcolumn = "yes"
 opt.splitright = true
 opt.splitbelow = true
-
-
 -- lazy packet manager config start
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then

@@ -39,7 +39,6 @@ return {
         local k = vim.keymap
         k.set("n", "gpg", vim.diagnostic.goto_prev)
         k.set("n", "gng", vim.diagnostic.goto_next)
-        k.set("n", "<leader>qf", vim.diagnostic.setloclist)
         vim.api.nvim_create_autocmd('LspAttach', {
             group = vim.api.nvim_create_augroup('UserLspConfig', {}),
             callback = function(ev)
@@ -62,12 +61,15 @@ return {
                 k.set("n", "<leader>as", vim.lsp.buf.code_action, opts)
                 --quick fix
                 --remap keys for applying refactor code actions.
-                k.set("n", "<leader>re", vim.lsp.buf.code_action, opts)
-                k.set("x", "<leader>r", vim.lsp.buf.code_action, opts)
-                k.set("n", "<leader>r", vim.lsp.buf.code_action, opts)
+                k.set("n", "<leader>re", function() vim.lsp.buf.code_action({only = {"refactor"}}) end, opts)
+                k.set("x", "<leader>r", function() vim.lsp.buf.code_action({only = {"refactor" }}) end, opts)
+                k.set("n", "<leader>r", function() vim.lsp.buf.code_action{only = {"refactor"}} end, opts)
                 --code len actions
                 k.set("n", "<leader>cl", vim.lsp.buf.code_action, opts)
                 -- use ctrl-s for selection ranges
+                k.set("n", "<leader>qf", function()vim.lsp.buf.code_action({
+                        only = {"quickfix"},
+                    })end,opts)
             end,
         })
     end
