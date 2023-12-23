@@ -9,6 +9,7 @@ opt.smartcase = true
 opt.tabstop = 4
 opt.shiftwidth = 4
 opt.expandtab = true
+opt.smarttab = true
 opt.autoindent = true
 opt.wrap = true
 opt.cursorline = true
@@ -18,6 +19,12 @@ opt.termguicolors = true
 opt.signcolumn = "yes"
 opt.splitright = true
 opt.splitbelow = true
+opt.undofile = true
+opt.autochdir = true
+opt.virtualedit = "block"
+opt.updatetime = 300
+
+
 -- lazy packet manager config start
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then

@@ -15,27 +15,20 @@ return {
     },
     {
         "williamboman/mason-lspconfig.nvim",
-        dependencies = { "neovim/nvim-lspconfig", "hrsh7th/cmp-nvim-lsp" },
+        dependencies = { "williamboman/mason.nvim" },
         config = function()
-            local capabilities = require('cmp_nvim_lsp').default_capabilities()
-            local mason_lsp = require('mason-lspconfig')
-            local lspconfig = require('lspconfig')
-            mason_lsp.setup {
+
+            require('mason-lspconfig').setup {
                 ensure_installed = { "lua_ls", "clangd", "bashls" },
                 automatic_installation = true,
-            }
-            mason_lsp.setup_handlers {
-                function(server)
-                    lspconfig[server].setup { capabilities = capabilities }
-                end,
-                ['tsserver'] = function()
-                    lspconfig.tsserver.setup { settings = { completions = { completeFunctionCalls = true } } }
-                end
             }
         end
     },
     {
         "neovim/nvim-lspconfig",
+        dependencies = {
+            "williamboman/mason-lspconfig.nvim",
+        },
         config = function()
             local k = vim.keymap
             k.set("n", "gpg", vim.diagnostic.goto_prev)
@@ -51,7 +44,7 @@ return {
                     k.set("n", "gi", vim.lsp.buf.implementation, opts)
                     k.set("n", "gr", vim.lsp.buf.references, opts)
                     --show documents
-                    k.set("n", "K", vim.lsp.buf.hover, opts)
+                    k.set("n", "sd", vim.lsp.buf.hover, opts)
                     k.set("n", "rn", vim.lsp.buf.rename, opts)
                     -- format code by <leader>f in xmap and nmap
                     k.set("n", "<leader>f", vim.lsp.buf.format, opts)
@@ -66,7 +59,7 @@ return {
                     k.set("x", "<leader>r", function() vim.lsp.buf.code_action({ only = { "refactor" } }) end, opts)
                     k.set("n", "<leader>r", function() vim.lsp.buf.code_action { only = { "refactor" } } end, opts)
                     --code len actions
-                    k.set("n", "<leader>cl", vim.lsp.buf.code_action, opts)
+                    k.set("n", "<leader>cl", vim.lsp.codelens.run, opts)
                     -- use ctrl-s for selection ranges
                     k.set("n", "<leader>qf", function()
                         vim.lsp.buf.code_action({
@@ -76,5 +69,5 @@ return {
                 end,
             })
         end,
-    }
+    },
 }

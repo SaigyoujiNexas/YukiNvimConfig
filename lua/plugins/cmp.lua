@@ -5,8 +5,17 @@ return {
         'hrsh7th/cmp-buffer',
         'hrsh7th/cmp-path',
         'hrsh7th/cmp-cmdline',
-        "hrsh7th/cmp-copilot",
-        "L3MON4D3/LuaSnip",
+
+        {"zbirenbaum/copilot-cmp",
+            config = function()
+                require("copilot_cmp").setup()
+            end
+
+        },
+        {
+            "L3MON4D3/LuaSnip",
+            dependencies = { "rafamadriz/friendly-snippets" },
+        },
         'hrsh7th/cmp-path',
         'saadparwaiz1/cmp_luasnip',
     },
@@ -23,7 +32,7 @@ return {
             snippet = {
                 expand = function(args)
                     -- vim.fn["vsnip#anonymous"](args.body) -- For `vsnip` users.
-                    nip.lsp_expand(args.body)     -- For `luasnip` users.
+                    nip.lsp_expand(args.body) -- For `luasnip` users.
                     -- require('snippy').expand_snippet(args.body) -- For `snippy` users.
                     -- vim.fn["UltiSnips#Anon"](args.body) -- For `ultisnips` users.
                 end,
@@ -71,8 +80,7 @@ return {
                 { name = 'nvim_lsp' },
                 { name = 'copilot' },
                 -- { name = 'vsnip' },
-                { name = 'path' },
-                { name = 'luasnip' },     -- For luasnip users.
+                { name = 'luasnip' }, -- For luasnip users.
                 -- { name = 'ultisnips' }, -- For ultisnips users.
                 -- { name = 'snippy' }, -- For snippy users.
             }, {
@@ -83,7 +91,7 @@ return {
         -- Set configuration for specific filetype.
         cmp.setup.filetype('gitcommit', {
             sources = cmp.config.sources({
-                { name = 'git' },     -- You can specify the `git` source if [you were installed it](https://github.com/petertriho/cmp-git).
+                { name = 'git' }, -- You can specify the `git` source if [you were installed it](https://github.com/petertriho/cmp-git).
             }, {
                 { name = 'buffer' },
             })
@@ -107,5 +115,25 @@ return {
         })
 
         -- Set up lspconfig.
+        local capabilities = vim.lsp.protocol.make_client_capabilities()
+        capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
+        local mason_lsp = require('mason-lspconfig')
+        local lspconfig = require('lspconfig')
+        mason_lsp.setup_handlers {
+            function(server_name)
+                lspconfig[server_name].setup({
+                    capabilities = capabilities
+                })
+            end,
+            ["clangd"] = function()
+                lspconfig["clangd"].setup{
+                    capabilities = capabilities,
+                    cmd = {
+                        "clangd",
+                        "--offset-encoding=utf-16"
+                    }
+                }
+            end
+        }
     end
 }

@@ -23,9 +23,6 @@ return {
                 dotfiles = true,
             },
         })
-        -- vim.keymap.set("n", "<C-t>", ":NvimTreeToggle<CR>", { noremap = true })
+        vim.keymap.set("n", "<C-t>", ":NvimTreeToggle<CR>", { noremap = true })
     end,
-    keys = {
-        {"<C-t>", ":NvimTreeToggle<CR>", mode="n", {noremap = true}}
-    }
 }
