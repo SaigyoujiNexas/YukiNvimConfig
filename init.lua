@@ -20,10 +20,9 @@ opt.signcolumn = "yes"
 opt.splitright = true
 opt.splitbelow = true
 opt.undofile = true
-opt.autochdir = true
+-- opt.autochdir = true
 opt.virtualedit = "block"
 opt.updatetime = 300
-
 
 -- lazy packet manager config start
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"

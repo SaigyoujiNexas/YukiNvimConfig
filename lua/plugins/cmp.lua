@@ -5,12 +5,11 @@ return {
         'hrsh7th/cmp-buffer',
         'hrsh7th/cmp-path',
         'hrsh7th/cmp-cmdline',
-
-        {"zbirenbaum/copilot-cmp",
+        {
+            "zbirenbaum/copilot-cmp",
             config = function()
                 require("copilot_cmp").setup()
             end
-
         },
         {
             "L3MON4D3/LuaSnip",
@@ -40,6 +39,11 @@ return {
             window = {
                 completion = cmp.config.window.bordered(),
                 documentation = cmp.config.window.bordered(),
+            },
+            view = {
+                docs = {
+                    auto_open = false
+                }
             },
             completion = {
             },
@@ -126,7 +130,7 @@ return {
                 })
             end,
             ["clangd"] = function()
-                lspconfig["clangd"].setup{
+                lspconfig["clangd"].setup {
                     capabilities = capabilities,
                     cmd = {
                         "clangd",

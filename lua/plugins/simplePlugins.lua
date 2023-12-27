@@ -1,6 +1,5 @@
 return {
     "rrethy/vim-illuminate",
-    "easymotion/vim-easymotion",
     {
         "zbirenbaum/copilot.lua",
         event = "InsertEnter",
@@ -29,7 +28,6 @@ return {
             "catppuccin/nvim" },
         lazy = false,
         config = function()
-            local macchiato = require("catppuccin.palettes").get_palette "macchiato"
             require("bufferline").setup {
                 options = {
                     options = {
