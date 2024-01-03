@@ -1,5 +1,4 @@
 return {
-    "rrethy/vim-illuminate",
     {
         "zbirenbaum/copilot.lua",
         event = "InsertEnter",
@@ -12,37 +11,7 @@ return {
         end
     },
     {
-        "numToStr/Comment.nvim",
-        config = function()
-            require('Comment').setup()
-        end
-    },
-    {
         "HiPHish/rainbow-delimiters.nvim",
         dependencies = { "nvim-treesitter/nvim-treesitter" }
     },
-    {
-        'akinsho/bufferline.nvim',
-        version = "*",
-        dependencies = { "nvim-tree/nvim-web-devicons",
-            "catppuccin/nvim" },
-        lazy = false,
-        config = function()
-            require("bufferline").setup {
-                options = {
-                    options = {
-                        diagnostics = "nvim_lsp",
-                        offsets = { {
-                            filetype = "NvimTree",
-                            text = "File Explorer",
-                            highlight = "Directory",
-                            text_align = "left" } }, },
-                },
-                highlights = require("catppuccin.groups.integrations.bufferline").get()
-            }
-        end,
-        keys = {
-            { "<Tab>", ":bnext<CR>" }
-        }
     }
-}
