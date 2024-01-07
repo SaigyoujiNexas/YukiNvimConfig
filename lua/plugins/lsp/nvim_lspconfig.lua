@@ -25,19 +25,21 @@ return {
                 opts.capabilities or {}
             )
             local function setup(server)
+                capabilities.offsetEncoding = "utf-8"
+                capabilities.offset_encoding = "utf-8"
                 local server_opts = vim.tbl_deep_extend("force", {
                     capabilities = vim.deepcopy(capabilities),
                 }, {})
                 require("lspconfig")[server].setup(server_opts)
+            
             end
-
+            local function clangdsetup()
+            end
             local mlsp = require("mason-lspconfig")
-            mlsp.setup({ ensure_installed = ensure_installed, handlers = { setup } })
-
-
+            mlsp.setup({ ensure_installed = ensure_installed, handlers = { setup, clangdsetup } })
             local k = vim.keymap
-            k.set("n", "gpg", vim.diagnostic.goto_prev)
-            k.set("n", "gng", vim.diagnostic.goto_next)
+            -- k.set("n", "gpg", vim.diagnostic.goto_prev)
+            -- k.set("n", "gng", vim.diagnostic.goto_next)
             vim.api.nvim_create_autocmd('LspAttach', {
                 group = vim.api.nvim_create_augroup('UserLspConfig', {}),
                 callback = function(ev)

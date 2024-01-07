@@ -2,6 +2,54 @@ return {
     "nvim-lualine/lualine.nvim",
     event = "VeryLazy",
     dependencies = { "nvim-tree/nvim-web-devicons" },
-    opts = {
-    }
+    opts = function()
+        local lualine_require = require("lualine_require")
+        lualine_require.require = require
+        return {
+            globalstatus = true,
+            disabled_filetypes = { statusline = { "dashboard" } },
+            sections = {
+                lualine_a = { "mode" },
+                lualine_b = { "branch" },
+                lualine_c = { "filename" },
+                lualine_x = {
+                    {
+                        function() return require("noice").api.status.command.get() end,
+                        cond = function() return package.loaded["noice"] and require("noice").api.status.command.has() end,
+
+                    },
+                    "encoding",
+                    {
+                        "diff",
+                        source = function()
+                            local gitsigns = vim.b.gitsigns_status_dict
+                            if gitsigns then
+                                return {
+                                    added = gitsigns.added,
+                                    modified = gitsigns.changed,
+                                    removed = gitsigns.removed
+                                }
+                            end
+                        end,
+                    } },
+                lualine_y = {
+                    {
+                        "progress",
+                        separtor = " ",
+                        padding = { left = 1, right = 1 }
+                    },
+                    {
+                        "location",
+                        padding = { left = 0, right = 1 }
+                    }
+                },
+                lualine_z = {
+                    function()
+                        return " " .. os.date("%R")
+                    end,
+                }
+            },
+            extensions = { "neo-tree", "lazy" }
+        }
+    end
 }
