@@ -2,7 +2,7 @@ return {
     "lukas-reineke/indent-blankline.nvim",
     main = "ibl",
     -- event = "LazyFile",
-    config = function()
+    opts = function()
         local highlight = {
             "RainbowRed",
             "RainbowYellow",
@@ -12,7 +12,28 @@ return {
             "RainbowViolet",
             "RainbowCyan",
         }
+        return {
+            exclude = {
+                filetypes = {
+                    "help",
+                    "alpha",
+                    "dashboard",
+                    "neotree",
+                    "Trouble",
+                    "trouble",
+                    "lazy",
+                    "mason",
+                    "notify",
+                    "toggleterm",
+                    "lazyterm",
+                }
+            },
+            scope = { highlight = highlight },
+        }
+    end,
+    config = function(_, opts)
         local hooks = require "ibl.hooks"
+        local highlight = opts.scope.highlight
         -- create the highlight groups in the highlight setup hook, so they are reset
         -- every time the colorscheme changes
         hooks.register(hooks.type.HIGHLIGHT_SETUP, function()
@@ -26,9 +47,8 @@ return {
         end)
 
         vim.g.rainbow_delimiters = { highlight = highlight }
-        require('ibl').setup {
-            scope = { highlight = highlight }
-        }
+
+        require('ibl').setup(opts)
         hooks.register(hooks.type.SCOPE_HIGHLIGHT, hooks.builtin.scope_highlight_from_extmark)
     end
 }
