@@ -2,20 +2,81 @@ return {
     {
         "neovim/nvim-lspconfig",
         dependencies = {
+            {
+                "folke/neoconf.nvim",
+                cmd = "Neoconf",
+                config = false,
+                dependencies = { "nvim-lspconfig" }
+            },
+            {
+                "folke/neodev.nvim",
+                opts = {}
+            },
             "mason.nvim",
             "williamboman/mason-lspconfig.nvim",
         },
-        -- event = "LazyFile",
         opts = {
             diagnostics = {
                 underline = true,
                 update_in_insert = false,
+                virtual_text = {
+                    spacing = 4,
+                    source = "if_many",
+                    prefix = "",
+                },
+                serverity_sort = true,
             },
+            inlay_hints = {
+                enabled = false,
+            },
+            capabilities = {},
+            format = {
+                formatting_options = nil,
+                timeout_ms = nil,
+            },
+            servers = {
+                lua_ls = {
+                    settings = {
+                        Lua = {
+                            workspace = {
+                                checkThirdParty = false,
+                            },
+                            completion = {
+                                callSnippet = "Replace",
+                            }
+                        }
+                    }
+                },
+                rust_analyzer = {
+                    settings = {
+                        ["rust-analyzer"] = {
+                            cargo = {
+                                allFeatures = true,
+                                loadOutDirsFromCheck = true,
+                                runBuildScripts = true,
+                            },
+                            checkOnSave = {
+                                allFeatures = true,
+                                command = "clippy",
+                                extraArgs = { "--no-deps" },
+                            },
+                            procMacro = {
+                                enable = true,
+                                ignored = {
+                                    ["async-trait"] = { "async_trait" },
+                                    ["napt-derive"] = { "napi" },
+                                    ["async-recursion"] = { "async_recursion" },
+                                },
+                            },
+                        },
+                    },
+                },
+            }
+        },
+        setup = {
         },
         config = function(_, opts)
-
             vim.diagnostic.config(vim.deepcopy(opts.diagnostics))
-
             local cmp_nvim_lsp = require("cmp_nvim_lsp")
             local capabilities = vim.tbl_deep_extend(
                 "force",
@@ -31,7 +92,6 @@ return {
                     capabilities = vim.deepcopy(capabilities),
                 }, {})
                 require("lspconfig")[server].setup(server_opts)
-            
             end
             local function clangdsetup()
             end

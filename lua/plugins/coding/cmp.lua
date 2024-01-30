@@ -9,6 +9,15 @@ return {
         'saadparwaiz1/cmp_luasnip',
         "chrisgrieser/cmp-nerdfont",
         {
+            "Saecki/crates.nvim",
+            event = {"BufRead Cargo.toml"},
+            opts = {
+                src = {
+                    cmp = { enabled = true },
+                },
+            },
+        },
+        {
             "zbirenbaum/copilot-cmp",
             config = function()
                 require("copilot_cmp").setup()
@@ -29,7 +38,9 @@ return {
 
         },
     },
-    opts = function()
+    opts = function(_, opts)
+        opts.sources = opts.sources or {}
+        table.insert(opts.sources, {name = "crates"})
         vim.api.nvim_set_hl(0, "CmpGhostText", { link = "Comment", default = true })
         local kinds = {
             Array         = " ",
