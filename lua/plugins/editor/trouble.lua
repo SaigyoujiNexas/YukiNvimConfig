@@ -25,14 +25,26 @@ return {
             function()
                 if require("trouble").is_open() then
                     require("trouble").next({ skip_groups = true, jump = true })
-                else ok, err = pcall(vim.diagnostic.goto_next)
+                else
+                    ok, err = pcall(vim.diagnostic.goto_next)
                     if not ok then
                         vim.notify(err, vim.log.levels.ERROR)
                     end
                 end
             end,
             desc = "Next trouble/quickfix item",
+        },
+        {
+            "<leader>lg",
+            "<cmd>TroubleToggle loclist<cr>",
+            desc = "Location List (Trouble)",
+        },
+        {
+            "<leader>qg",
+            "<cmd>TroubleToggle quickfix<cr>",
+            desc = "Quickfix List (Trouble)",
         }
+
 
     }
 

@@ -2,7 +2,8 @@ return {
     "nvimdev/dashboard-nvim",
     event = "VimEnter",
     opts = function()
-
+        local projects_desc = "Projects"
+        projects_desc = projects_desc .. string.rep(" ", 43 - #projects_desc)
         local opts = {
             theme = "doom",
             hide = {
@@ -13,6 +14,7 @@ return {
             config = {
                 -- stylua: ignore
                 center = {
+                    { action = "Telescope projects", desc = projects_desc, icon = " ", key = "p", key_format = "  %s" },
                     { action = "Telescope find_files", desc = " Find file", icon = " ", key = "f" },
                     { action = "ene | startinsert", desc = " New file", icon = " ", key = "n" },
                     { action = "Telescope oldfiles", desc = " Recent files", icon = " ", key = "r" },

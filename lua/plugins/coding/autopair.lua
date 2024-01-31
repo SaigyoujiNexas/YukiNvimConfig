@@ -1,11 +1,11 @@
 return {
     "windwp/nvim-autopairs",
     event = "InsertEnter",
-    dependencies = {
-        "hrsh7th/cmp-nvim-lsp",
+    opts = {
+        disable_filetype = { "TelescopePrompt" , "vim" },
     },
-    config = function()
-        require("nvim-autopairs").setup()
+    config = function(_, opts)
+        require("nvim-autopairs").setup(opts)
         -- If you want insert `(` after select function or method item
         local cmp_autopairs = require('nvim-autopairs.completion.cmp')
         local cmp = require('cmp')

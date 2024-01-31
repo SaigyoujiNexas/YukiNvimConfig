@@ -1,5 +1,6 @@
 return {
     'hrsh7th/nvim-cmp',
+    version = false,
     event = "InsertEnter",
     dependencies = {
         "hrsh7th/cmp-nvim-lsp",
@@ -10,7 +11,7 @@ return {
         "chrisgrieser/cmp-nerdfont",
         {
             "Saecki/crates.nvim",
-            event = {"BufRead Cargo.toml"},
+            event = { "BufRead Cargo.toml" },
             opts = {
                 src = {
                     cmp = { enabled = true },
@@ -40,7 +41,8 @@ return {
     },
     opts = function(_, opts)
         opts.sources = opts.sources or {}
-        table.insert(opts.sources, {name = "crates"})
+        table.insert(opts.sources, { name = "luasnip" })
+        table.insert(opts.sources, { name = "crates"})
         vim.api.nvim_set_hl(0, "CmpGhostText", { link = "Comment", default = true })
         local kinds = {
             Array         = " ",
@@ -85,13 +87,9 @@ return {
         }
         local cmp = require("cmp")
         local defaults = require("cmp.config.default")()
-        local check_backspace = function()
-            local col = vim.fn.col('.') - 1
-            return col == 0 or vim.fn.getline('.'):sub(col, col):match('%s')
-        end
         return {
             completion = {
-                completeopt = "menu,menuone,noinsert",
+                completeopt = "menu,preview,menuone,noselect,noinsert",
             },
             snippet = {
                 expand = function(args)
@@ -103,33 +101,13 @@ return {
                 ['<C-f>'] = cmp.mapping.scroll_docs(4),
                 ['<C-Space>'] = cmp.mapping.complete(),
                 ['<C-e>'] = cmp.mapping.abort(),
-                ['<CR>'] = cmp.mapping.confirm({ select = true }),
-                ["<Tab>"] = cmp.mapping(function(fallback)
-                    if cmp.visible() then
-                        cmp.select_next_item()
-                    elseif nip.expandable() then
-                        nip.expand()
-                    elseif nip.expand_or_jumpable() then
-                        nip.expand_or_jump()
-                    elseif check_backspace() then
-                        fallback()
-                    else
-                        fallback()
-                    end
-                end, {
-                    "i",
-                    "s",
+                ['<CR>'] = cmp.mapping.confirm({ select = false }),
+                ["<Tab>"] = cmp.mapping.select_next_item({
+                    behavior = cmp.SelectBehavior.Insert,
                 }),
-                ["<S-Tab>"] = cmp.mapping(function(fallback)
-                    if cmp.visible() then
-                        cmp.select_prev_item()
-                    elseif nip.jumpable(-1) then
-                        nip.jump(-1)
-                    else
-                        fallback()
-                    end
-                end
-                , { "i", "s" }),
+                ["<S-Tab>"] = cmp.mapping.select_prev_item({
+                    behavior = cmp.SelectBehavior.Insert,
+                }),
             }),
             sources = cmp.config.sources({
                 { name = 'nvim_lsp' },
@@ -166,7 +144,6 @@ return {
             source.group_index = source.group_index or 1
         end
         cmp.setup(opts)
-
         cmp.setup.cmdline(':', {
             mapping = cmp.mapping.preset.cmdline(),
             sources = cmp.config.sources({
@@ -183,27 +160,5 @@ return {
                 { name = 'buffer' }
             }
         })
-
-        -- Set up lspconfig.
-        -- local capabilities = vim.lsp.protocol.make_client_capabilities()
-        -- capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
-        -- local mason_lsp = require('mason-lspconfig')
-        -- local lspconfig = require('lspconfig')
-        -- mason_lsp.setup_handlers {
-        --     function(server_name)
-        --         lspconfig[server_name].setup({
-        --             capabilities = capabilities
-        --         })
-        --     end,
-        --     ["clangd"] = function()
-        --         lspconfig["clangd"].setup {
-        --             capabilities = capabilities,
-        --             cmd = {
-        --                 "clangd",
-        --                 "--offset-encoding=utf-16"
-        --             }
-        --         }
-        --     end
-        -- }
     end
 }

@@ -4,6 +4,7 @@ return {
     priority = 1000,
     opts = {
         integrations = {
+            aerial = true,
             cmp = true,
             dashboard = true,
             flash = true,
@@ -11,7 +12,10 @@ return {
             headlines = true,
             illuminate = true,
             indent_blackline = { enable = true },
+            leap = true,
+            lsp_trouble = true,
             mason = true,
+            markdown = true,
             native_lsp = {
                 enable = true,
                 underlines = {
@@ -21,13 +25,16 @@ return {
                     information = { "undercurl" },
                 },
             },
+            navic = { enable = true, custom_bg = "lualine"},
+            neotest = true,
             neotree = true,
             noice = true,
             notify = true,
+            semantic_tokens = true,
             rainbow_delimiters = true,
             telescope = true,
             treesitter = true,
-            lsp_trouble = true,
+            treesitter_context = true,
             which_key = true,
         },
         flavour = "macchiato",
