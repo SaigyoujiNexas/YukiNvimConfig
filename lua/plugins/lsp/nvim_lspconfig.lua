@@ -24,7 +24,7 @@ return {
 					source = "if_many",
 					prefix = "",
 				},
-				serverity_sort = true,
+				severity_sort = true,
 			},
 			inlay_hints = {
 				enabled = false,
@@ -96,9 +96,6 @@ return {
 			local register_capability = vim.lsp.handlers["client/registerCapability"]
 			vim.lsp.handlers["client/registerCapability"] = function(err, res, ctx)
 				local ret = register_capability(err, res, ctx)
-				local client_id = ctx.client_id
-				local client = vim.lsp.get_client_by_id(client_id)
-				local buffer = vim.api.nvim_get_current_buf()
 				return ret
 			end
 

@@ -11,6 +11,7 @@ opt.shiftwidth = 4
 opt.expandtab = true
 opt.smarttab = true
 opt.autoindent = true
+
 opt.wrap = true
 opt.cursorline = true
 opt.mouse:append("a")
