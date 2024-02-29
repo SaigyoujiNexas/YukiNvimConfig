@@ -25,6 +25,7 @@ require("lazy").setup({
 		{ import = "plugins.ui" },
 		{ import = "plugins.editor" },
 		{ import = "plugins.util" },
+        { import = "plugins.test"},
 	},
 	defaults = {
 		lazy = false,

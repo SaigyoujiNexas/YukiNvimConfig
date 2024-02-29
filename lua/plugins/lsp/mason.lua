@@ -3,14 +3,16 @@ return {
 		"williamboman/mason.nvim",
 		cmd = "Mason",
 		build = ":MasonUpdate",
-		opts = function(_, opts)
-			if type(opts.ensure_installed) == "table" then
-				vim.list_extend(opts.ensure_installed, { "codelldb" })
-			end
+		opts = function(_, _)
 			return {
 				ensure_installed = {
 					"stylua",
 					"shfmt",
+                    "codelldb",
+                    "java-test",
+                    "java-debug-adapter",
+                    "jdtls",
+                    "csharpier",
 				},
 				ui = {
 					icons = {

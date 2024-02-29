@@ -33,15 +33,17 @@ return {
 		},
 	},
     cmd = {"TSUpdateSync", "TSUpdate", "TSInstall"},
-	opts = function(_, opts)
-		if type(opts.ensure_installed) == "table" then
-			vim.list_extend(opts.ensure_installed, { "ron", "rust", "toml" })
-		end
+	opts = function(_, _)
 		return {
 			auto_install = true,
 			highlight = { enable = true },
 			indent = { enable = true },
 			ensure_installed = {
+                "c",
+                "cpp",
+                "c_sharp",
+                "ron",
+                "rust",
 				"bash",
 				"c",
 				"diff",
@@ -64,6 +66,7 @@ return {
 				"vim",
 				"vimdoc",
 				"yaml",
+                "java",
 			},
 		}
 	end,
