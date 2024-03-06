@@ -13,6 +13,8 @@ return {
                     "java-debug-adapter",
                     "jdtls",
                     "csharpier",
+                    "markdownlint",
+                    "marksman",
 				},
 				ui = {
 					icons = {

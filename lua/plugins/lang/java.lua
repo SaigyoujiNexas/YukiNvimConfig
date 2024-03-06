@@ -1,7 +1,7 @@
 return {
 	"mfussenegger/nvim-jdtls",
 	dependencies = { "folke/which-key.nvim" },
-	ft = java_filetypes,
+	ft = {"java" },
 	opts = function()
 		return {
 			root_dir = require("lspconfig.server_configurations.jdtls").default_config.root_dir,

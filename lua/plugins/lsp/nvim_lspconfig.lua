@@ -139,6 +139,7 @@ return {
 					organize_imports_on_format = true,
 					enable_import_completion = true,
 				},
+                marksman = {},
 			},
 			setup = {
 				rust_analyzer = function(_, opts)
