@@ -1,3 +1,4 @@
+local Util = require("util")
 return {
 	"rcarriga/nvim-notify",
 	opts = {
@@ -21,7 +22,9 @@ return {
 		end,
 		stages = "fade_in_slide_out",
 	},
-	init = function() 
-        vim.notify = require("notify")
-    end,
+	init = function()
+		Util.on_very_lazy(function()
+			vim.notify = require("notify")
+		end)
+	end,
 }

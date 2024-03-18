@@ -1,3 +1,4 @@
+local Util = require("util")
 return {
 	{
 		"neovim/nvim-lspconfig",
@@ -25,8 +26,19 @@ return {
 					prefix = "",
 				},
 				severity_sort = true,
+				signs = {
+					text = {
+						[vim.diagnostic.severity.ERROR] = require("config").icons.diagnostics.Error,
+						[vim.diagnostic.severity.WARN] = require("config").icons.diagnostics.Warn,
+						[vim.diagnostic.severity.HINT] = require("config").icons.diagnostics.Hint,
+						[vim.diagnostic.severity.INFO] = require("config").icons.diagnostics.Info,
+					},
+				},
 			},
 			inlay_hints = {
+				enabled = false,
+			},
+			codelens = {
 				enabled = false,
 			},
 			capabilities = {},
@@ -41,128 +53,73 @@ return {
 							workspace = {
 								checkThirdParty = false,
 							},
+							codeLens = {
+								enable = true,
+							},
 							completion = {
 								callSnippet = "Replace",
 							},
 						},
 					},
 				},
-				rust_analyzer = {
-					settings = {
-						["rust-analyzer"] = {
-							cargo = {
-								allFeatures = true,
-								loadOutDirsFromCheck = true,
-								runBuildScripts = true,
-							},
-							checkOnSave = {
-								allFeatures = true,
-								command = "clippy",
-								extraArgs = { "--no-deps" },
-							},
-							procMacro = {
-								enable = true,
-								ignored = {
-									["async-trait"] = { "async_trait" },
-									["napi-derive"] = { "napi" },
-									["async-recursion"] = { "async_recursion" },
-								},
-							},
-						},
-					},
-				},
-				clangd = {
-					root_dir = function(fname)
-						return require("lspconfig.util").root_pattern(
-							"Makefile",
-							"configure.ac",
-							"configure.in",
-							"config.h.in",
-							"meson.build",
-							"meson_options.txt",
-							"build.ninja"
-						)(fname) or require("lspconfig.util").root_pattern(
-							"compile_commands.json",
-							"compile_flags.txt"
-						)(fname) or require("lspconfig.util").find_git_ancestor(fname)
-					end,
-					capabilities = {
-						offsetEncoding = { "utf-16" },
-					},
-					cmd = {
-						"clangd",
-						"--background-index",
-						"--clang-tidy",
-						"--header-insertion=iwyu",
-						"--completion-style=detailed",
-						"--function-arg-placeholders",
-						"--fallback-style=llvm",
-					},
-					init_options = {
-						usePlaceholders = true,
-						completeUnimported = true,
-						clangdFileStatus = true,
-					},
-				},
-				taplo = {
-					keys = {
-						{
-							"K",
-							function()
-								if vim.fn.expand("%:t") == "Cargo.toml" and require("crates").popup_available() then
-									require("crates").show_popup()
-								else
-									vim.lsp.buf.hover()
-								end
-							end,
-							desc = "Show Crate Documentation",
-						},
-					},
-				},
-				jdtls = {},
-				omnisharp = {
-					handlers = {
-						["textDocument/definition"] = function(...)
-							return require("omnisharp_extended").handler(...)
-						end,
-					},
-					keys = {
-						{
-							"gd",
-							function()
-								require("omnisharp_extended").telescope_lsp_definitions()
-							end,
-							desc = "Goto Definition",
-						},
-					},
-					enable_roslyn_analyzers = true,
-					organize_imports_on_format = true,
-					enable_import_completion = true,
-				},
-                marksman = {},
 			},
-			setup = {
-				rust_analyzer = function(_, opts)
-					require("rust-tools").setup(vim.tbl_deep_extend("force", {}, { server = opts }))
-					return true
-				end,
-				clangd = function(_, opts)
-					require("clangd_extensions").setup(vim.tbl_deep_extend("force", {}, { server = opts }))
-					return false
-				end,
-				jdtls = function()
-					return true
-				end,
-			},
+			setup = {},
 		},
 		config = function(_, opts)
+			if Util.has("neoconf.nvim") then
+				local plugin = require("lazy.core.config").spec.plugins["neoconf.nvim"]
+				require("neoconf").setup(require("lazy.core.plugin").values(plugin, "opts", false))
+			end
+			-- setup autoformat
+			Util.format.register(Util.lsp.formatter())
+
 			if opts.autoformat ~= nil then
 				vim.g.autoformat = opts.autoformat
+				Util.deprecate("nvim-lspconfig.opts.autoformat", "vim.g.autoformat")
 			end
+
 			local register_capability = vim.lsp.handlers["client/registerCapability"]
 			vim.lsp.handlers["client/registerCapability"] = function(err, res, ctx)
 				local ret = register_capability(err, res, ctx)
 				return ret
+			end
+
+			for name, icon in pairs(require("config").icons.diagnostics) do
+				name = "DiagnosticSign" .. name
+				vim.fn.sign_define(name, { text = icon, texthl = name, numhl = "" })
+			end
+
+			if opts.inlay_hints.enabled then
+				Util.lsp.on_attach(function(client, buffer)
+					if client.supports_method("textDocument/inlayHint") then
+						Util.toggle.inlay_hints(buffer, true)
+					end
+				end)
+			end
+
+			if opts.codelens.enabled and vim.lsp.codelens then
+				Util.lsp.on_attach(function(client, buffer)
+					if client.supports_method("textDocument/codeLens") then
+						vim.lsp.codelens.refresh()
+						--- autocmd BufEnter,CursorHold,InsertLeave <buffer> lua vim.lsp.codelens.refresh()
+						vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "InsertLeave" }, {
+							buffer = buffer,
+							callback = vim.lsp.codelens.refresh,
+						})
+					end
+				end)
+			end
+
+			if type(opts.diagnostics.virtual_text) == "table" and opts.diagnostics.virtual_text.prefix == "icons" then
+				opts.diagnostics.virtual_text.prefix = vim.fn.has("nvim-0.10.0") == 0 and "●"
+					or function(diagnostic)
+						local icons = require("config").icons.diagnostics
+						for d, icon in pairs(icons) do
+							if diagnostic.severity == vim.diagnostic.severity[d:upper()] then
+								return icon
+							end
+						end
+					end
 			end
 
 			vim.diagnostic.config(vim.deepcopy(opts.diagnostics))
@@ -172,7 +129,7 @@ return {
 				"force",
 				{},
 				vim.lsp.protocol.make_client_capabilities(),
-				cmp_nvim_lsp.default_capabilities(),
+				cmp_nvim_lsp.default_capabilities() or {},
 				opts.capabilities or {}
 			)
 			local function setup(server)
@@ -203,6 +160,14 @@ return {
 					end
 				end
 			end
+			if Util.lsp.get_config("denols") and Util.lsp.get_config("tsserver") then
+				local is_deno = require("lspconfig.util").root_pattern("deno.json", "deno.jsonc")
+				Util.lsp.disable("tsserver", is_deno)
+				Util.lsp.disable("denols", function(root_dir)
+					return not is_deno(root_dir)
+				end)
+			end
+
 			mlsp.setup({ ensure_installed = ensure_installed, handlers = { setup } })
 			local k = vim.keymap
 			-- k.set("n", "gpg", vim.diagnostic.goto_prev)

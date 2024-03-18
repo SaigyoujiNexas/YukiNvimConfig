@@ -8,13 +8,6 @@ return {
 				ensure_installed = {
 					"stylua",
 					"shfmt",
-                    "codelldb",
-                    "java-test",
-                    "java-debug-adapter",
-                    "jdtls",
-                    "csharpier",
-                    "markdownlint",
-                    "marksman",
 				},
 				ui = {
 					icons = {
@@ -25,6 +18,7 @@ return {
 				},
 			}
 		end,
+        ---@param opts MasonSettings | {ensure_installed: string[]}
 		config = function(_, opts)
 			require("mason").setup(opts)
 			local mr = require("mason-registry")

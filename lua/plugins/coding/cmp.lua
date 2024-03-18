@@ -38,53 +38,11 @@ return {
 			},
 		},
 	},
-	opts = function(_, opts)
-		opts.sources = opts.sources or {}
+	opts = function()
 		vim.api.nvim_set_hl(0, "CmpGhostText", { link = "Comment", default = true })
-		local kinds = {
-			Array = " ",
-			Boolean = "󰨙 ",
-			Class = " ",
-			Codeium = "󰘦 ",
-			Color = " ",
-			Control = " ",
-			Collapsed = " ",
-			Constant = "󰏿 ",
-			Constructor = " ",
-			Copilot = " ",
-			Enum = " ",
-			EnumMember = " ",
-			Event = " ",
-			Field = " ",
-			File = " ",
-			Folder = " ",
-			Function = "󰊕 ",
-			Interface = " ",
-			Key = " ",
-			Keyword = " ",
-			Method = "󰊕 ",
-			Module = " ",
-			Namespace = "󰦮 ",
-			Null = " ",
-			Number = "󰎠 ",
-			Object = " ",
-			Operator = " ",
-			Package = " ",
-			Property = " ",
-			Reference = " ",
-			Snippet = " ",
-			String = " ",
-			Struct = "󰆼 ",
-			TabNine = "󰏚 ",
-			Text = " ",
-			TypeParameter = " ",
-			Unit = " ",
-			Value = " ",
-			Variable = "󰀫 ",
-		}
 		local cmp = require("cmp")
 		local defaults = require("cmp.config.default")()
-		local ret_opts = {
+		return {
 			completion = {
 				completeopt = "menu,preview,menuone,noselect,noinsert",
 			},
@@ -117,9 +75,9 @@ return {
 			}),
 			formatting = {
 				format = function(_, item)
-					local icon = kinds[item.kind]
-					if icon then
-						item.kind = icon .. item.kind
+					local icons = require("config").icons.kinds
+					if icons[item.kind] then
+						item.kind = icons[item.kind] .. item.kind
 					end
 					return item
 				end,
@@ -134,9 +92,9 @@ return {
 					h1_group = "CmpGhostText",
 				},
 			},
+            history = true,
+            delete_check_events = "TextChanged",
 		}
-        table.insert(ret_opts.sorting.comparators, 1, require("clangd_extensions.cmp_scores"))
-        return ret_opts
 	end,
 	config = function(_, opts)
 		local cmp = require("cmp")

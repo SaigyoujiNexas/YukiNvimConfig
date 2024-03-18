@@ -18,7 +18,7 @@ return {
 		return {
 			options = {
 				globalstatus = true,
-				disabled_filetypes = { statusline = { "dashboard", "starter" } },
+				disabled_filetypes = { statusline = { "dashboard", "starter", "alpha" } },
 			},
 			sections = {
 				lualine_a = { "mode" },

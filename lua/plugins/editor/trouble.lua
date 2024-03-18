@@ -7,7 +7,7 @@ return {
     opts = { use_diagnostic_signs = true },
     keys = {
         {
-            "gpg",
+            "[q",
             function()
                 if require("trouble").is_open() then
                     require("trouble").previous({ skip_groups = true, jump = true })
@@ -21,12 +21,12 @@ return {
             desc = "Previous trouble/quickfix item",
         },
         {
-            "gng",
+            "]q",
             function()
                 if require("trouble").is_open() then
                     require("trouble").next({ skip_groups = true, jump = true })
                 else
-                    ok, err = pcall(vim.diagnostic.goto_next)
+                    local ok, err = pcall(vim.diagnostic.goto_next)
                     if not ok then
                         vim.notify(err, vim.log.levels.ERROR)
                     end
@@ -35,12 +35,12 @@ return {
             desc = "Next trouble/quickfix item",
         },
         {
-            "<leader>lg",
+            "<leader>xl",
             "<cmd>TroubleToggle loclist<cr>",
             desc = "Location List (Trouble)",
         },
         {
-            "<leader>qg",
+            "<leader>xq",
             "<cmd>TroubleToggle quickfix<cr>",
             desc = "Quickfix List (Trouble)",
         }
