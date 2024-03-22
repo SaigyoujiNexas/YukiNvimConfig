@@ -1,9 +1,11 @@
+local Util = require("util")
 return {
 	{
 		"nvim-treesitter/nvim-treesitter",
 		opts = function(_, opts)
-			if type(opts.ensure_installed) == "table" then
-				vim.list_extend(opts.ensure_installed, { "c", "cpp", "objc", "cuda", "proto" })
+			if opts.ensure_installed ~= "all" then
+				opts.ensure_installed =
+					Util.list_insert_unique(opts.ensure_installed, { "c", "cpp", "objc", "cuda", "proto" })
 			end
 		end,
 	},
@@ -36,12 +38,24 @@ return {
 				},
 			},
 		},
+		init = function()
+			local augroup = vim.api.nvim_create_augroup("clangd_extensions", { clear = true })
+			vim.api.nvim_create_autocmd("LspAttach", {
+				group = augroup,
+				desc = "Load clangd_extensions with clangd",
+				callback = function(args)
+					if assert(vim.lsp.get_client_by_id(args.data.client_id)).name == "clangd" then
+						require("clangd_extensions")
+						vim.api.nvim_del_augroup_by_id(augroup)
+					end
+				end,
+			})
+		end,
 	},
 	{
 		"williamboman/mason-lspconfig.nvim",
 		opts = function(_, opts)
-			opts.ensure_installed = opts.ensure_installed or {}
-			vim.list_extend(opts.ensure_installed, { "clangd" })
+			Util.list_insert_unique(opts.ensure_installed, "clangd")
 		end,
 	},
 	{
@@ -68,7 +82,7 @@ return {
 						)(fname) or require("lspconfig.util").find_git_ancestor(fname)
 					end,
 					capabilities = {
-						offsetEncoding = { "utf-16" },
+						offsetEncoding = { "utf-8" },
 					},
 					cmd = {
 						"clangd",

@@ -14,9 +14,13 @@ return {
 	end,
 	opts = function()
 		local lualine_require = require("lualine_require")
+        local icons = require("config").icons
+        vim.o.laststatus = vim.g.lualine_laststatus
+
 		lualine_require.require = require
 		return {
 			options = {
+                theme = "auto",
 				globalstatus = true,
 				disabled_filetypes = { statusline = { "dashboard", "starter", "alpha" } },
 			},

@@ -25,6 +25,17 @@ opt.undofile = true
 opt.virtualedit = "block"
 opt.updatetime = 300
 
+vim.api.nvim_set_keymap('i', '，', ',', {})
+vim.api.nvim_set_keymap('i', '。', '.', {})
+vim.api.nvim_set_keymap('i', '！', '!', {})
+vim.api.nvim_set_keymap('i', '？', '?', {})
+vim.api.nvim_set_keymap('i', '：', ':', {})
+
+vim.api.nvim_set_keymap('c', '，', ',', {})
+vim.api.nvim_set_keymap('c', '。', '.', {})
+vim.api.nvim_set_keymap('c', '！', '!', {})
+vim.api.nvim_set_keymap('c', '？', '?', {})
+vim.api.nvim_set_keymap('c', '：', ':', {})
 -- lazy packet manager config start
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
