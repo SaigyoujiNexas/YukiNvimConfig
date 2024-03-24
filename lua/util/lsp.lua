@@ -1,5 +1,3 @@
-local Util = require("util")
-
 ---@class util.lsp
 local M = {}
 
@@ -78,22 +76,22 @@ function M.disable(server, cond)
 	)
 end
 
----@param opts? LazyFormatter| {filter?: (string|lsp.Client.filter)}
+---@param opts? YukiFormatter| {filter?: (string|lsp.Client.filter)}
 function M.formatter(opts)
 	opts = opts or {}
 	local filter = opts.filter or {}
 	filter = type(filter) == "string" and { name = filter } or filter
 	---@cast filter lsp.Client.filter
-	---@type LazyFormatter
+	---@type YukiFormatter
 	local ret = {
 		name = "LSP",
 		primary = true,
 		priority = 1,
 		format = function(buf)
-			M.format(Util.merge(filter, { bufnr = buf }))
+			M.format(YukiVim.merge(filter, { bufnr = buf }))
 		end,
 		sources = function(buf)
-			local clients = M.get_clients(Util.merge(filter, { bufnr = buf }))
+			local clients = M.get_clients(YukiVim.merge(filter, { bufnr = buf }))
 			---@param client lsp.Client
 			local ret = vim.tbl_filter(function(client)
 				return client.supports_method("textDocument/formatting")
@@ -105,7 +103,7 @@ function M.formatter(opts)
 			end, ret)
 		end,
 	}
-	return Util.merge(ret, opts) --[[@as LazyFormatter]]
+	return YukiVim.merge(ret, opts) --[[@as YukiFormatter]]
 end
 
 ---@alias   lsp.Client.format {timeout_ms?: number, format_options?:table | lsp.Client.filter}
@@ -116,8 +114,8 @@ function M.format(opts)
 		"force",
 		{},
 		opts or {},
-		require("util").opts("nvim-lspconfig").format or {},
-		require("util").opts("conform.nvim").format or {}
+		YukiVim.opts("nvim-lspconfig").format or {},
+		YukiVim.opts("conform.nvim").format or {}
 	)
 	local ok, conform = pcall(require, "conform")
 	if ok then

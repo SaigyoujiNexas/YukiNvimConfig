@@ -1,5 +1,3 @@
-local Util = require("util")
-
 ---@class util.format
 ---@overload fun(opts?: {force?:boolean})
 local M = setmetatable({}, {
@@ -8,14 +6,14 @@ local M = setmetatable({}, {
 	end,
 })
 
----@class Formatter
+---@class YukiFormatter
 ---@field name string
 ---@field primary? boolean
 ---@field format fun(bufnr:number)
 ---@field sources fun(bufnr:number):string[]
 ---@field priority number
 
-M.formatters = {} ---@type Formatter[]
+M.formatters = {} ---@type YukiFormatter[]
 
 function M.register(formatter)
 	M.formatters[#M.formatters + 1] = formatter
@@ -25,18 +23,18 @@ function M.register(formatter)
 end
 
 function M.formatexpr()
-	if Util.has("conform.nvim") then
+	if YukiVim.has("conform.nvim") then
 		return require("conform").formatexpr()
 	end
 	return vim.lsp.formatexpr({ timeout_ms = 3000 })
 end
 
 ---@param buf? number
----@return (Formatter|{active:boolean,resolved:string[]})[]
+---@return (YukiFormatter|{active:boolean,resolved:string[]})[]
 function M.resolve(buf)
 	buf = buf or vim.api.nvim_get_current_buf()
 	local have_primary = false
-	---@param formatter Formatter
+	---@param formatter YukiFormatter
 	return vim.tbl_map(function(formatter)
 		local sources = formatter.sources(buf)
 		local active = #sources > 0 and (not formatter.primary or not have_primary)
@@ -75,7 +73,7 @@ function M.info(buf)
 	if not have then
 		lines[#lines + 1] = "\n***No formatters available for this buffer.***"
 	end
-	Util[enabled and "info" or "warn"](
+	YukiVim[enabled and "info" or "warn"](
 		table.concat(lines, "\n"),
 		{ title = "LazyFormat (" .. (enabled and "enabled" or "disabled") .. ")" }
 	)
@@ -119,7 +117,7 @@ function M.format(opts)
 	for _, formatter in ipairs(M.resolve(buf)) do
 		if formatter.active then
 			done = true
-			Util.try(function()
+			YukiVim.try(function()
 				return formatter.format(buf)
 			end, { msg = "Formatter `" .. formatter.name .. "` failed" })
 		end
@@ -130,25 +128,7 @@ function M.format(opts)
 	end
 end
 
-function M.health()
-	local Config = require("lazy.core.config")
-	local has_plugin = Config.spec.plugins["none-ls.nvim"]
-	local has_extra = vim.tbl_contains(Config.spec.modules, "plugins.lsp.none-ls")
-	if has_plugin and not has_extra then
-		Util.warn({
-			"`conform.nvim` and `nvim-lint` are now the default formatters and linters",
-			"",
-			"You can use those plugins together with `none-ls.nvim`,",
-			"for formatting to work correctly.",
-			"",
-			"In case you no longer want to use `none-ls.nvim`, just remove the spec from your config.",
-		})
-	end
-end
-
 function M.setup()
-	M.health()
-
 	-- Autoformat autocmd
 	vim.api.nvim_create_autocmd("BufWritePre", {
 		group = vim.api.nvim_create_augroup("LazyFormat", {}),

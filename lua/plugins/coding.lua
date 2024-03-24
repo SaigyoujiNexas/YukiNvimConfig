@@ -25,32 +25,10 @@ return {
 			"saadparwaiz1/cmp_luasnip",
 			"chrisgrieser/cmp-nerdfont",
 			{
-				"Saecki/crates.nvim",
-				event = { "BufRead Cargo.toml" },
-				opts = {
-					src = {
-						cmp = { enabled = true },
-					},
-				},
-			},
-			{
 				"zbirenbaum/copilot-cmp",
 				config = function()
 					require("copilot_cmp").setup()
 				end,
-			},
-			{
-				"L3MON4D3/LuaSnip",
-				dependencies = {
-					"rafamadriz/friendly-snippets",
-					config = function()
-						require("luasnip.loaders.from_vscode").lazy_load()
-					end,
-				},
-				opts = {
-					history = true,
-					delete_check_events = "TextChanged",
-				},
 			},
 		},
 		opts = function()
@@ -60,11 +38,6 @@ return {
 			return {
 				completion = {
 					completeopt = "menu,preview,menuone,noselect,noinsert",
-				},
-				snippet = {
-					expand = function(args)
-						require("luasnip").lsp_expand(args.body)
-					end,
 				},
 				mapping = cmp.mapping.preset.insert({
 					["<C-b>"] = cmp.mapping.scroll_docs(-4),
@@ -107,16 +80,22 @@ return {
 						h1_group = "CmpGhostText",
 					},
 				},
-				history = true,
-				delete_check_events = "TextChanged",
 			}
 		end,
+        ---@param opts cmp.ConfigSchema
 		config = function(_, opts)
-			local cmp = require("cmp")
+            local cmp = require("cmp")
 			for _, source in ipairs(opts.sources) do
 				source.group_index = source.group_index or 1
 			end
 			cmp.setup(opts)
+            cmp.setup.filetype('gitcommit', {
+                sources  = cmp.config.sources({
+                    {name = 'git'},
+                }, {{
+                        name = 'buffer'},
+                    })
+            })
 			cmp.setup.cmdline(":", {
 				mapping = cmp.mapping.preset.cmdline(),
 				sources = cmp.config.sources({
@@ -126,6 +105,7 @@ return {
 						name = "cmdline",
 					},
 				}),
+                matching = { disallow_symbol_nonprefix_matching = false }
 			})
 			cmp.setup.cmdline({ "/", "?" }, {
 				mapping = cmp.mapping.preset.cmdline(),
@@ -135,6 +115,34 @@ return {
 			})
 		end,
 	},
+	{
+				"L3MON4D3/LuaSnip",
+				dependencies = {
+            {
+					"rafamadriz/friendly-snippets",
+					config = function()
+						require("luasnip.loaders.from_vscode").lazy_load()
+					end,
+            },{
+                "nvim-cmp",
+                dependencies = {
+                    "saadparwaiz1/cmp_luasnip",
+                },
+                opts = function(_, opts)
+                    opts.snippet = {
+                        expand = function (args)
+                            require("luasnip").lsp_expand(args.body)
+                        end,
+                    }
+                    table.insert(opts.sources, {name = "luasnip"})
+                end
+            }
+				},
+				opts = {
+					history = true,
+					delete_check_events = "TextChanged",
+				},
+			},
 	{
 		"echasnovski/mini.comment",
 		event = "VeryLazy",

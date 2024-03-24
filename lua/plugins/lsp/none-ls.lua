@@ -1,16 +1,15 @@
-local Util = require("util")
 return {
 	"nvimtools/none-ls.nvim",
 	dependencies = { "mason.nvim" },
 	init = function()
-		Util.on_very_lazy(function()
+		YukiVim.on_very_lazy(function()
 			-- register the formatter with LazyVim
-			require("util").format.register({
+			YukiVim.format.register({
 				name = "none-ls.nvim",
 				priority = 200, -- set higher than conform, the builtin formatter
 				primary = true,
 				format = function(buf)
-					return Util.lsp.format({
+					return YukiVim.lsp.format({
 						bufnr = buf,
 						filter = function(client)
 							return client.name == "null-ls"

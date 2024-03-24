@@ -1,4 +1,3 @@
-local Util = require("util")
 local M = {}
 
 ---@param opts ConformOpts
@@ -9,7 +8,7 @@ function M.setup(_, opts)
 			if formatter.extra_args then
 				---@diagnostic disable-next-line: undefined-field
 				formatter.prepend_args = formatter.extra_args
-				Util.deprecate(
+				YukiVim.deprecate(
 					("opts.formatters.%s.extra_args"):format(name),
 					("opts.formatters.%s.prepend_args"):format(name)
 				)
@@ -19,8 +18,8 @@ function M.setup(_, opts)
 
 	for _, key in ipairs({ "format_on_save", "format_after_save" }) do
 		if opts[key] then
-			Util.warn(
-				("Don't set `opts.%s` for `conform.nvim`.\n**LazyVim** will use the conform formatter automatically"):format(
+			YukiVim.warn(
+				("Don't set `opts.%s` for `conform.nvim`.\n**YukiVim** will use the conform formatter automatically"):format(
 					key
 				)
 			)
@@ -38,17 +37,17 @@ return {
 	cmd = "ConformInfo",
 	keys = {
 		{
-			"<leader>f",
+			"<leader>cF",
 			function()
-				require("conform").format()
+				require("conform").format({ formatters = { "injected" }, timeout_ms = 3000 })
 			end,
 			mode = { "n", "v" },
 			desc = "Format Injected Langs",
 		},
 	},
 	init = function()
-		require("util").on_very_lazy(function()
-			require("util").format.register({
+		YukiVim.on_very_lazy(function()
+			YukiVim.format.register({
 				name = "conform.nvim",
 				priority = 100,
 				primary = true,
@@ -71,10 +70,11 @@ return {
 	opts = function()
 		local plugin = require("lazy.core.config").plugins["conform.nvim"]
 		if plugin.config ~= M.setup then
-			Util.error({
+			YukiVim.error({
 				"Don't set `plugin.config` for `conform.nvim`.\n",
-			}, { title = "LazyVim" })
+			}, { title = "YukiVim" })
 		end
+		---@class ConformOpts
 		local opts = {
 			format = {
 				timeout_ms = 3000,
@@ -82,12 +82,14 @@ return {
 				quiet = false,
 				lsp_fallback = true,
 			},
+			---@type table<string, conform.FormatterUnit[]>
 			formatters_by_ft = {
 				lua = { "stylua" },
 				fish = { "fish_indent" },
 				sh = { "shfmt" },
 				cs = { "csharpier" },
 			},
+			---@type table<string, conform.FormatterConfigOverride|fun(bufnr: integer): nil|conform.FormatterConfigOverride>
 			formatters = {
 				csharpier = {
 					command = "dotnet-csharpier",

@@ -1,5 +1,6 @@
 local java_filetypes = { "java" }
-local Util = require("util")
+---@param config table
+---@param custom function | table | nil
 local function extend_or_override(config, custom, ...)
 	if type(custom) == "function" then
 		config = custom(config, ...) or config
@@ -18,11 +19,16 @@ return {
 		end,
 	},
 	{
-		"williamboman/mason.nvim",
-		opts = function(_, opts)
-			opts.ensure_installed = opts.ensure_installed or {}
-			vim.list_extend(opts.ensure_installed, { "java-test", "java-debug-adapter" })
-		end,
+		"mfussenegger/nvim-dap",
+		dependencies = {
+			{
+				"williamboman/mason.nvim",
+				opts = function(_, opts)
+					opts.ensure_installed = opts.ensure_installed or {}
+					vim.list_extend(opts.ensure_installed, { "java-test", "java-debug-adapter" })
+				end,
+			},
+		},
 	},
 	{
 		"neovim/nvim-lspconfig",
@@ -76,10 +82,9 @@ return {
 			}
 		end,
 		config = function()
-			local opts = Util.opts("nvim-jdtls") or {}
+			local opts = YukiVim.opts("nvim-jdtls") or {}
 			local mason_registry = require("mason-registry")
-			opts = opts or {}
-			local bundles = {}
+			local bundles = {} ---@type string[]
 			if opts.dap then
 				local java_dbg_pkg = mason_registry.get_package("java-debug-adapter")
 				local java_dbg_path = java_dbg_pkg:get_install_path()
@@ -104,16 +109,15 @@ return {
 				local fname = vim.api.nvim_buf_get_name(0)
 
 				-- Configuration can be augmented and overridden by opts.jdtls
-				local config = vim.tbl_deep_extend("force", {
+				local config = extend_or_override({
 					cmd = opts.full_cmd(opts),
 					root_dir = opts.root_dir(fname),
 					init_options = {
 						bundles = bundles,
 					},
-					-- enable CMP capabilities
-					capabilities = require("cmp_nvim_lsp").default_capabilities(),
-				}, opts.jdtls or {})
-
+					capabilities = YukiVim.has("cmp-nvim-lsp") and require("cmp_nvim_lsp").default_capabilities()
+						or nil,
+				}, opts.jdtls)
 				-- Existing server will be reused if the root_dir matches.
 				require("jdtls").start_or_attach(config)
 				-- not need to require("jdtls.setup").add_commands(), start automatically adds commands
@@ -133,7 +137,7 @@ return {
 						})
 						if opts.dap then
 							require("jdtls").setup_dap(opts.dap)
-							require("jdtls.dap").setup_dap_main_class_configs()
+							require("jdtls.dap").setup_dap_main_class_configs(opts.dap_main)
 							if opts.test and mason_registry.is_installed("java-test") then
 								-- custom keymaps for Java test runner (not yet compatible with neotest)
 								wk.register({

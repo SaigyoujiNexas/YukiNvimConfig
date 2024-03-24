@@ -25,17 +25,17 @@ opt.undofile = true
 opt.virtualedit = "block"
 opt.updatetime = 300
 
-vim.api.nvim_set_keymap('i', '，', ',', {})
-vim.api.nvim_set_keymap('i', '。', '.', {})
-vim.api.nvim_set_keymap('i', '！', '!', {})
-vim.api.nvim_set_keymap('i', '？', '?', {})
-vim.api.nvim_set_keymap('i', '：', ':', {})
+vim.api.nvim_set_keymap("i", "，", ",", {})
+vim.api.nvim_set_keymap("i", "。", ".", {})
+vim.api.nvim_set_keymap("i", "！", "!", {})
+vim.api.nvim_set_keymap("i", "？", "?", {})
+vim.api.nvim_set_keymap("i", "：", ":", {})
 
-vim.api.nvim_set_keymap('c', '，', ',', {})
-vim.api.nvim_set_keymap('c', '。', '.', {})
-vim.api.nvim_set_keymap('c', '！', '!', {})
-vim.api.nvim_set_keymap('c', '？', '?', {})
-vim.api.nvim_set_keymap('c', '：', ':', {})
+vim.api.nvim_set_keymap("c", "，", ",", {})
+vim.api.nvim_set_keymap("c", "。", ".", {})
+vim.api.nvim_set_keymap("c", "！", "!", {})
+vim.api.nvim_set_keymap("c", "？", "?", {})
+vim.api.nvim_set_keymap("c", "：", ":", {})
 -- lazy packet manager config start
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
@@ -49,7 +49,7 @@ if not vim.loop.fs_stat(lazypath) then
 	})
 end
 
-vim.opt.rtp:prepend(lazypath)
+vim.opt.rtp:prepend(vim.env.LAZY or lazypath)
 -- lazy packet manager config end
 require("lazy").setup({
 	spec = {
@@ -82,9 +82,11 @@ require("lazy").setup({
 })
 
 function M.setup(opts)
-    require("config").setup(opts)
+	require("config").setup(opts)
 end
 
-require("config")
+require("config").setup({
+	colorscheme = "catppuccin",
+})
 
 return M

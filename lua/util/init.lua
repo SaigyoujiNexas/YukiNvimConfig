@@ -5,20 +5,22 @@ local LazyUtil = require("lazy.core.util")
 ---@field format util.format
 ---@field toggle util.toggle
 ---@field root util.root
+---@field terminal util.terminal
+---@field ui util.ui
 
 local M = {}
 
 ---@type table<string, string|string[]>
 local deprecated = {
-  get_clients = "lsp",
-  on_attach = "lsp",
-  on_rename = "lsp",
-  root_patterns = { "root", "patterns" },
-  get_root = { "root", "get" },
-  float_term = { "terminal", "open" },
-  toggle_diagnostics = { "toggle", "diagnostics" },
-  toggle_number = { "toggle", "number" },
-  fg = "ui",
+	get_clients = "lsp",
+	on_attach = "lsp",
+	on_rename = "lsp",
+	root_patterns = { "root", "patterns" },
+	get_root = { "root", "get" },
+	float_term = { "terminal", "open" },
+	toggle_diagnostics = { "toggle", "diagnostics" },
+	toggle_number = { "toggle", "number" },
+	fg = "ui",
 }
 
 setmetatable(M, {
@@ -30,9 +32,9 @@ setmetatable(M, {
 		if dep then
 			local mod = type(dep) == "table" and dep[1] or dep
 			local key = type(dep) == "table" and dep[2] or k
-			M.deprecate([[require("lazyvim.util").]] .. k, [[require("lazyvim.util").]] .. mod .. "." .. key)
+			M.deprecate([[YukiVim.]] .. k, [[YukiVim.]] .. mod .. "." .. key)
 			---@diagnostic disable-next-line: no-unknown
-			t[mod] = require("lazyvim.util." .. mod) -- load here to prevent loops
+			t[mod] = require("util." .. mod) -- load here to prevent loops
 			return t[mod][key]
 		end
 		---@diagnostic disable-next-line: no-unknown
@@ -72,34 +74,37 @@ end
 
 function M.deprecate(old, new)
 	M.warn(("`%s` is deprecated. Please use `%s` instead"):format(old, new), {
-		title = "LazyVim",
+		title = "YukiVim",
 		once = true,
 		stacktrace = true,
 		stacklevel = 6,
 	})
 end
 
-
-
 --- Insert one or more values into a list like table and maintain that you do not insert non-unique values (THIS MODIFIES `lst`)
 ---@param lst any[]|nil The list like table that you want to insert into
 ---@param vals any|any[] Either a list like table of values to be inserted or a single value to be inserted
 ---@return any[] # The modified list like table
 function M.list_insert_unique(lst, vals)
-  if not lst then lst = {} end
-  assert(vim.tbl_islist(lst), "Provided table is not a list like table")
-  if not vim.tbl_islist(vals) then vals = { vals } end
-  local added = {}
-  vim.tbl_map(function(v) added[v] = true end, lst)
-  for _, val in ipairs(vals) do
-    if not added[val] then
-      table.insert(lst, val)
-      added[val] = true
-    end
-  end
-  return lst
+	if not lst then
+		lst = {}
+	end
+	assert(vim.tbl_islist(lst), "Provided table is not a list like table")
+	if not vim.tbl_islist(vals) then
+		vals = { vals }
+	end
+	local added = {}
+	vim.tbl_map(function(v)
+		added[v] = true
+	end, lst)
+	for _, val in ipairs(vals) do
+		if not added[val] then
+			table.insert(lst, val)
+			added[val] = true
+		end
+	end
+	return lst
 end
-
 
 function M.lazy_notify()
 	local notifs = {}
@@ -110,8 +115,8 @@ function M.lazy_notify()
 	local orig = vim.notify
 	vim.notify = temp
 
-	local timer = vim.loop.new_timer()
-	local check = assert(vim.loop.new_check())
+	local timer = vim.uv.new_timer()
+	local check = assert(vim.uv.new_check())
 
 	local replay = function()
 		timer:stop()

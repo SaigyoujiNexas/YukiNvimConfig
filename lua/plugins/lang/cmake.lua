@@ -11,12 +11,13 @@ return {
 		opts = function(_, opts)
 			opts.ensure_installed = Util.list_insert_unique(opts.ensure_installed, { "cmakelang", "cmakelint" })
 		end,
-	},{
-        "williamboman/mason-lspconfig.nvim",
-        opts = function (_, opts)
-            opts.ensure_installed = Util.list_insert_unique(opts.ensure_installed, "neocmake")
-        end
-    },
+	},
+	{
+		"williamboman/mason-lspconfig.nvim",
+		opts = function(_, opts)
+			opts.ensure_installed = Util.list_insert_unique(opts.ensure_installed, "neocmake")
+		end,
+	},
 	{
 		"neovim/nvim-lspconfig",
 		opts = {

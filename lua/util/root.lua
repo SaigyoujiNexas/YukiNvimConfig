@@ -1,5 +1,3 @@
-local Util = require("util")
-
 ---@class util.root
 ---@overload fun(): string
 local M = setmetatable({}, {
@@ -8,12 +6,13 @@ local M = setmetatable({}, {
 	end,
 })
 
----@class Root
+---@class YukiRoot
 ---@field paths string[]
----@alias RootFn fun(buf: number): (string|string[])
----@alias RootSpec string|string[]|RootFn
----@type RootSpec[]
+---@field sepc YukiRootSpec
+---@alias YukiRootFn fun(buf: number): (string|string[])
+---@alias YukiRootSpec string|string[]|YukiRootFn
 
+---@type YukiRootSpec[]
 M.spec = { "lsp", { ".git", "lua" }, "cwd" }
 M.detectors = {}
 
@@ -27,7 +26,7 @@ function M.detectors.lsp(buf)
 		return {}
 	end
 	local roots = {} ---@type string[]
-	for _, client in pairs(Util.lsp.get_clients({ bufnr = buf })) do
+	for _, client in pairs(YukiVim.lsp.get_clients({ bufnr = buf })) do
 		-- only check workspace folders, since we're not interested in clients
 		-- running in single file mode
 		local workspace = client.config.workspace_folders
@@ -36,7 +35,7 @@ function M.detectors.lsp(buf)
 		end
 	end
 	return vim.tbl_filter(function(path)
-		path = Util.norm(path)
+		path = YukiVim.norm(path)
 		return path and bufpath:find(path, 1, true) == 1
 	end, roots)
 end
@@ -54,19 +53,19 @@ function M.bufpath(buf)
 end
 
 function M.cwd()
-	return M.realpath(vim.loop.cwd()) or ""
+	return M.realpath(vim.uv.cwd()) or ""
 end
 
 function M.realpath(path)
 	if path == "" or path == nil then
 		return nil
 	end
-	path = vim.loop.fs_realpath(path) or path
-	return Util.norm(path)
+	path = vim.uv.fs_realpath(path) or path
+	return YukiVim.norm(path)
 end
 
----@param spec RootSpec
----@return RootFn
+---@param spec YukiRootSpec
+---@return YukiRootFn
 function M.resolve(spec)
 	if M.detectors[spec] then
 		return M.detectors[spec]
@@ -78,13 +77,13 @@ function M.resolve(spec)
 	end
 end
 
----@param opts? { buf?: number, spec?: RootSpec[], all?: boolean }
+---@param opts? { buf?: number, spec?: YukiRootSpec[], all?: boolean }
 function M.detect(opts)
 	opts = opts or {}
 	opts.spec = opts.spec or type(vim.g.root_spec) == "table" and vim.g.root_spec or M.spec
 	opts.buf = (opts.buf == nil or opts.buf == 0) and vim.api.nvim_get_current_buf() or opts.buf
 
-	local ret = {} ---@type Root[]
+	local ret = {} ---@type YukiRoot[]
 	for _, spec in ipairs(opts.spec) do
 		local paths = M.resolve(spec)(opts.buf)
 		paths = paths or {}
@@ -128,7 +127,7 @@ function M.info()
 	lines[#lines + 1] = "```lua"
 	lines[#lines + 1] = "vim.g.root_spec = " .. vim.inspect(spec)
 	lines[#lines + 1] = "```"
-	require("util").info(lines, { title = "NeoVim Roots" })
+	YukiVim.info(lines, { title = "NeoVim Roots" })
 	return roots[1] and roots[1].paths[1] or vim.loop.cwd()
 end
 
@@ -137,7 +136,7 @@ M.cache = {}
 
 function M.setup()
 	vim.api.nvim_create_user_command("NeoVimRoot", function()
-		Util.root.info()
+		YukiVim.root.info()
 	end, { desc = "NeoVim roots for the current buffer" })
 
 	vim.api.nvim_create_autocmd({ "LspAttach", "BufWritePost", "DirChanged" }, {
@@ -166,7 +165,7 @@ function M.get(opts)
 	if opts and opts.normalize then
 		return ret
 	end
-	return Util.is_win() and ret:gsub("/", "\\") or ret
+	return YukiVim.is_win() and ret:gsub("/", "\\") or ret
 end
 
 function M.git()

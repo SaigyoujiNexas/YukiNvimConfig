@@ -66,12 +66,12 @@ return {
 			setup = {},
 		},
 		config = function(_, opts)
-			if Util.has("neoconf.nvim") then
+			if YukiVim.has("neoconf.nvim") then
 				local plugin = require("lazy.core.config").spec.plugins["neoconf.nvim"]
 				require("neoconf").setup(require("lazy.core.plugin").values(plugin, "opts", false))
 			end
 			-- setup autoformat
-			Util.format.register(Util.lsp.formatter())
+			YukiVim.format.register(YukiVim.lsp.formatter())
 
 			if opts.autoformat ~= nil then
 				vim.g.autoformat = opts.autoformat
