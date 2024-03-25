@@ -59,6 +59,20 @@ return {
 		end,
 	},
 	{
+		"williamboman/mason.nvim",
+		opts = function(_, opts)
+			if type(opts.ensure_installed) == "table" then
+				vim.list_extend(opts.ensure_installed, { "codelldb" })
+			end
+		end,
+	},
+	{
+		"nvim-cmp",
+		opts = function(_, opts)
+			table.insert(opts.sorting.comparators, 1, require("clangd_extensions.cmp_scores"))
+		end,
+	},
+	{
 		"neovim/nvim-lspconfig",
 		opts = {
 			servers = {
@@ -102,7 +116,7 @@ return {
 			},
 			setup = {
 				clangd = function(_, opts)
-					local clangd_ext_opts = require("util").opts("clangd_extensions.nvim")
+					local clangd_ext_opts = YukiVim.opts("clangd_extensions.nvim")
 					require("clangd_extensions").setup(
 						vim.tbl_deep_extend("force", clangd_ext_opts or {}, { server = opts })
 					)
@@ -119,7 +133,6 @@ return {
 	},
 	{
 		"mfussenegger/nvim-dap",
-		optional = true,
 		dependencies = {
 			-- Ensure C/C++ debugger is installed
 			"williamboman/mason.nvim",
