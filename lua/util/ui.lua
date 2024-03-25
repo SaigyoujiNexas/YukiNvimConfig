@@ -1,5 +1,7 @@
 ---@class util.ui
----@alias Sign{name: string, text: string, texthl: string, priority: nimber}
+local M = {}
+
+---@alias Sign{name: string, text: string, texthl: string, priority: number}
 
 ---@return Sign[]
 ---@param buf number

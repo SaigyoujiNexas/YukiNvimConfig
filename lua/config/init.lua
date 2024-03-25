@@ -13,6 +13,7 @@ local defaults = {
 	defaults = {
 		autocmds = true,
 		keymaps = true,
+		options = true,
 	},
 	icons = {
 		misc = {
@@ -163,7 +164,7 @@ function M.setup(opts)
 				M.load("autocmds")
 			end
 			M.load("keymaps")
-
+			M.load("options")
 			YukiVim.format.setup()
 			YukiVim.root.setup()
 		end,
