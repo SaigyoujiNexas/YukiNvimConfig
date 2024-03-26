@@ -125,5 +125,19 @@ function M.format(opts)
 		vim.lsp.buf.format(opts)
 	end
 end
+---@return (LazyKeys|{has?:string})[]
+function M.lspKeyResolve(buffer, spec)
+	local Keys = require("lazy.core.handler.keys")
+	if not Keys.resolve then
+		return {}
+	end
+	local opts = YukiVim.opts("nvim-lspconfig")
+	local clients = YukiVim.lsp.get_clients({ bufnr = buffer })
+	for _, client in ipairs(clients) do
+		local maps = opts.servers[client.name] and opts.servers[client.name].keys or {}
+		vim.list_extend(spec, maps)
+	end
+	return Keys.resolve(spec)
+end
 
 return M

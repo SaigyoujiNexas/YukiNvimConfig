@@ -73,6 +73,11 @@ return {
 			-- setup autoformat
 			YukiVim.format.register(YukiVim.lsp.formatter())
 
+			require("lspconfig").sourcekit.setup({
+				cmd = {
+					"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/sourcekit-lsp",
+				},
+			})
 			if opts.autoformat ~= nil then
 				vim.g.autoformat = opts.autoformat
 				Util.deprecate("nvim-lspconfig.opts.autoformat", "vim.g.autoformat")
@@ -169,50 +174,44 @@ return {
 			end
 
 			mlsp.setup({ ensure_installed = ensure_installed, handlers = { setup } })
-			local k = vim.keymap
-			-- k.set("n", "gpg", vim.diagnostic.goto_prev)
-			-- k.set("n", "gng", vim.diagnostic.goto_next)
-			vim.api.nvim_create_autocmd("LspAttach", {
-				group = vim.api.nvim_create_augroup("UserLspConfig", {}),
-				callback = function(ev)
-					-- Enable completion triggered by <c-x><c-o>
-					vim.bo[ev.buf].omnifunc = "v:lua.vim.lsp.omnifunc"
-					local opt = { buffer = ev.buf }
-					k.set("n", "gd", vim.lsp.buf.definition, opt)
-					k.set("n", "gt", vim.lsp.buf.type_definition, opt)
-					k.set("n", "gi", vim.lsp.buf.implementation, opt)
-					k.set("n", "gr", vim.lsp.buf.references, opt)
-					--show documents
-					k.set("n", "sd", vim.lsp.buf.hover, opt)
-					k.set("n", "rn", vim.lsp.buf.rename, opt)
-					-- format code by <leader>f in xmap and nmap
-					-- k.set("n", "<leader>f", vim.lsp.buf.format, opt)
-					-- k.set("x", "<leader>f", vim.lsp.buf.format, opt)
-					k.set("n", "<leader>a", vim.lsp.buf.code_action, opt)
-					k.set("x", "<leader>a", vim.lsp.buf.code_action, opt)
-					k.set("n", "<leader>ac", vim.lsp.buf.code_action, opt)
-					k.set("n", "<leader>as", vim.lsp.buf.code_action, opt)
-					--quick fix
-					--remap keys for applying refactor code actions.
-					k.set("n", "<leader>re", function()
-						vim.lsp.buf.code_action({ only = { "refactor" } })
-					end, opt)
-					k.set("x", "<leader>r", function()
-						vim.lsp.buf.code_action({ only = { "refactor" } })
-					end, opt)
-					k.set("n", "<leader>r", function()
-						vim.lsp.buf.code_action({ only = { "refactor" } })
-					end, opt)
-					--code len actions
-					k.set("n", "<leader>cl", vim.lsp.codelens.run, opt)
-					-- use ctrl-s for selection ranges
-					k.set("n", "<leader>qf", function()
-						vim.lsp.buf.code_action({
-							only = { "quickfix" },
-						})
-					end, opt)
-				end,
-			})
+			-- local k = vim.keymap
+			-- vim.api.nvim_create_autocmd("LspAttach", {
+			-- 	group = vim.api.nvim_create_augroup("UserLspConfig", {}),
+			-- 	callback = function(ev)
+			-- 		-- Enable completion triggered by <c-x><c-o>
+			-- 		vim.bo[ev.buf].omnifunc = "v:lua.vim.lsp.omnifunc"
+			-- 		local opt = { buffer = ev.buf }
+			-- 		k.set("n", "gd", vim.lsp.buf.definition, opt)
+			-- 		k.set("n", "gt", vim.lsp.buf.type_definition, opt)
+			-- 		k.set("n", "gi", vim.lsp.buf.implementation, opt)
+			-- 		k.set("n", "gr", vim.lsp.buf.references, opt)
+			-- 		--show documents
+			-- 		k.set("n", "sd", vim.lsp.buf.hover, opt)
+			-- 		k.set("n", "rn", vim.lsp.buf.rename, opt)
+			-- 		k.set("n", "<leader>ca", vim.lsp.buf.code_action, opt)
+			-- 		k.set("x", "<leader>ca", vim.lsp.buf.code_action, opt)
+			-- 		--quick fix
+			-- 		--remap keys for applying refactor code actions.
+			-- 		k.set("n", "<leader>re", function()
+			-- 			vim.lsp.buf.code_action({ only = { "refactor" } })
+			-- 		end, opt)
+			-- 		k.set("x", "<leader>r", function()
+			-- 			vim.lsp.buf.code_action({ only = { "refactor" } })
+			-- 		end, opt)
+			-- 		k.set("n", "<leader>r", function()
+			-- 			vim.lsp.buf.code_action({ only = { "refactor" } })
+			-- 		end, opt)
+			-- 		--code len actions
+			-- 		k.set("n", "<leader>cl", vim.lsp.codelens.run, opt)
+			-- 		-- use ctrl-s for selection ranges
+			-- 		k.set("n", "<leader>qf", function()
+			-- 			vim.lsp.buf.code_action({
+			-- 				only = { "quickfix" },
+			-- 			})
+			-- 		end, opt)
+			-- 	end,
+			-- })
 		end,
+		keys = {},
 	},
 }

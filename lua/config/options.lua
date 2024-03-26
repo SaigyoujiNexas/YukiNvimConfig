@@ -57,7 +57,7 @@ opt.fillchars = {
 	eob = " ",
 }
 opt.foldlevel = 99
-vim.opt.foldtext = "v:lua.require'lazyvim.util'.ui.foldtext()"
+vim.opt.foldtext = "v:lua.require'util'.ui.foldtext()"
 vim.opt.statuscolumn = [[%!v:lua.require'util'.ui.statuscolumn()]]
 vim.opt.foldtext = "v:lua.require'util'.ui.foldtext()"
 vim.o.formatexpr = "v:lua.require'util'.format.formatexpr()"

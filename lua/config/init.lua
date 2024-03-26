@@ -117,31 +117,6 @@ local defaults = {
 	},
 }
 
-M.json = {
-	version = 3,
-	data = {
-		version = nil, ---@type string?
-		news = {}, ---@type table<string, string>
-		extras = {}, ---@type string[]
-	},
-}
-
-function M.json.load()
-	local path = vim.fn.stdpath("config") .. "/lazyvim.json"
-	local f = io.open(path, "r")
-	if f then
-		local data = f:read("*a")
-		f:close()
-		local ok, json = pcall(vim.json.decode, data, { luanil = { object = true, array = true } })
-		if ok then
-			M.json.data = vim.tbl_deep_extend("force", M.json.data, json or {})
-			if M.json.data.version ~= M.json.version then
-				Util.json.migrate()
-			end
-		end
-	end
-end
-
 ---@type YukiVimOptions
 local options
 
@@ -248,8 +223,7 @@ function M.init()
 	-- after installing missing plugins
 	M.load("options")
 
-	YukiVim.plugin.setup()
-	M.json.load()
+	-- YukiVim.plugin.setup()
 end
 
 setmetatable(M, {
@@ -257,7 +231,7 @@ setmetatable(M, {
 		if options == nil then
 			return vim.deepcopy(defaults)[key]
 		end
-		---@cast options LazyVimConfig
+		---@cast options YukiVimConfig
 		return options[key]
 	end,
 })
